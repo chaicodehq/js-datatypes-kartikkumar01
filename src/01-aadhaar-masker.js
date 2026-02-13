@@ -28,5 +28,11 @@
  *   // => "INVALID"
  */
 export function maskAadhaar(aadhaarNumber) {
-  // Your code here
+  // /\D/ this regex checks if there is any non digit , it includes -, ' '
+  if(typeof aadhaarNumber !== 'string' || /\D/.test(aadhaarNumber) || aadhaarNumber.length !== 12) return 'INVALID';
+
+  const last4Digits = aadhaarNumber.slice(8);
+  const x4 = 'X'.repeat(4);
+  const mask = x4+'-'+x4+'-';
+  return mask+last4Digits;
 }
