@@ -39,5 +39,47 @@
  *   //      text: "I love this song", wordCount: 4, sentiment: "love" }
  */
 export function parseWhatsAppMessage(message) {
-  // Your code here
+  //Agar input string nahi hai, return null
+  if(message === null || typeof message !== 'string') return null;
+
+  //Agar string mein " - " nahi hai return null
+  if(!message.includes(' - ')) return null;
+
+  //ya ": " nahi hai (after sender), return null
+  if(!message.includes(': ')) return null;
+
+  const commaSpaceIndex = message.indexOf(', ');
+  const spaceDashSpaceIndex = message.indexOf(' - ');
+  const colonSpaceIndex = message.indexOf(': ');
+
+  //Extracting the date
+  const date = message.slice(0, commaSpaceIndex);
+
+  //Extracting the time
+  const time = message.slice(commaSpaceIndex + 2, spaceDashSpaceIndex);
+
+  //Extracting the sender name
+  const sender = message.slice(spaceDashSpaceIndex + 3, colonSpaceIndex);
+
+  //Extracting the message (REMOVING TRAILING AND LEADING SPACES)
+  let text = message.slice(colonSpaceIndex + 2).trim();
+
+  //Counting the words of message (REMOVING MIDDLE SPACES)
+  let textWordsArray = text.split(' ');
+  textWordsArray = textWordsArray.filter(word => word !== ''); //removing empty strings
+  const wordCount = textWordsArray.length;
+  text = textWordsArray.join(' ');
+
+  //sentiment detection
+  let sentiment = 'neutral'; //default
+  const sentiments = {
+    funny : ["😂", ":)", "haha"],
+    love : ["❤", "love", "pyaar"]
+  }
+
+  if(sentiments.funny.some(funnyStr => text.toLowerCase().includes(funnyStr))) sentiment = 'funny';
+  else if(sentiments.love.some(loveStr => text.toLowerCase().includes(loveStr))) sentiment = 'love';
+
+  return { date, time, sender,text, wordCount, sentiment};
 }
+
