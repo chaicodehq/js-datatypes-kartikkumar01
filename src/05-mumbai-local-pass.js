@@ -41,6 +41,33 @@
  *   generateLocalPass(null)
  *   // => "INVALID PASS"
  */
+function isObject(value){
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+function generatePassId(passenger){
+  const {classType, from, to} = passenger;
+  return (classType.charAt(0) + from.slice(0,3) + to.slice(0,3)).toUpperCase();
+}
 export function generateLocalPass(passenger) {
-  // Your code here
+  //validations
+  if(!isObject(passenger)) return 'INVALID PASS';
+  const classTypes = ['first', 'second'];
+  if(!classTypes.includes(passenger.classType.toLowerCase())) return 'INVALID PASS';
+
+  //Checking if object contains all the required properties and are not empty strings
+  const requiredFields = ['name', 'from', 'to', 'classType'];
+  for(let i = 0; i<requiredFields.length; i++){
+    if(!passenger.hasOwnProperty(requiredFields[i]) || passenger[requiredFields[i]] === '') return 'INVALID PASS';
+  }
+
+  //destructuring the passenger object
+  let {name,classType, from, to} = passenger;
+  const passId = generatePassId(passenger);
+  name = name.toUpperCase();
+  classType = classType.toUpperCase();
+  to = to.charAt(0).toUpperCase() + to.slice(1).toLowerCase();
+  from = from.charAt(0).toUpperCase() + from.slice(1).toLowerCase();
+
+  return `MUMBAI LOCAL PASS\n---\nName: ${name}\nFrom: ${from}\nTo: ${to}\nClass: ${classType}\nPass ID: ${passId}`;
+  
 }
