@@ -43,6 +43,50 @@
  *   iplAuctionSummary({ name: "RCB", purse: 500 }, [{ name: "Kohli", role: "bat", price: 1700 }])
  *   // => { ..., remaining: -1200, isOverBudget: true }
  */
+
+function isObject(value){
+  return typeof value === 'object' && value !== null && !Array.isArray(value); 
+}
+
 export function iplAuctionSummary(team, players) {
-  // Your code here
+  // *   - Agar team object nahi hai ya team.purse positive number nahi hai, return null
+  if(!isObject(team) || typeof team.purse !== 'number' || team.purse < 0) return null;
+
+  // *   - Agar players array nahi hai ya empty hai, return null
+  if(!Array.isArray(players) || players.length === 0) return null;
+
+  //calculating total spent of player prices & remaining purse
+  const totalSpent = players.reduce((acc, player) => acc + player.price, 0);
+  const remaining = team.purse - totalSpent;
+  const isOverBudget = totalSpent > team.purse;
+  const playerCount = players.length;
+  const averagePrice = Math.round(totalSpent / playerCount);
+
+  //counting players by role
+  const batsmanCount = players.filter(player => player.role === 'bat').length;
+  const bowlerCount = players.filter(player => player.role === 'bowl').length;
+  const allRounderCount = players.filter(player => player.role === 'ar').length;
+  const wicketKeeperCount = players.filter(player => player.role === 'wk').length;
+  const byRole = {};
+  if(batsmanCount) byRole.bat = batsmanCount;
+  if(bowlerCount) byRole.bowl = bowlerCount;
+  if(allRounderCount) byRole.ar = allRounderCount;
+  if(wicketKeeperCount) byRole.wk = wicketKeeperCount;
+
+  //finding out costliest and cheapest player
+  //sorting on the basis of number
+  const sortedPlayersByPrice = players.sort((a,b) => a.price - b.price); //ascending order
+  const cheapestPlayer = sortedPlayersByPrice.at(0); //first element
+  const costliestPlayer = sortedPlayersByPrice.at(-1); //last element
+
+  return {
+    teamName: team.name, 
+    totalSpent, 
+    remaining, 
+    playerCount,
+    costliestPlayer,
+    cheapestPlayer,
+    averagePrice, 
+    byRole,
+    isOverBudget}
 }
