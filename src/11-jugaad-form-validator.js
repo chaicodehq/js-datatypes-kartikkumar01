@@ -61,6 +61,82 @@
  *   })
  *   // => { isValid: false, errors: { name: "...", email: "...", ... } }
  */
+
+function isObject(value){
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
 export function validateForm(formData) {
-  // Your code here
+  // //validation
+  // if(!isObject(formData)) return null;
+
+  const response = {
+    isValid : true,
+    errors : {}
+  }
+
+  //destructuring
+  let  { name, email, phone, age, pincode, state, agreeTerms } = formData;
+
+  //name validation
+  const nameLength = name.trim().length
+  if(nameLength < 2 || nameLength > 50){
+    response.isValid = false;
+    response.errors.name = "Name must be 2-50 characters";
+  }
+
+  //email validation
+  //indexof === lastIndexOf means character is exactly coming only one time
+  const exactOneatTheRate = email.includes('@') && (email.indexOf('@') === email.lastIndexOf('@'))
+  const minOneDotAfterAtTheRate = email.indexOf('.', email.indexOf('@')) !== -1
+  if(!exactOneatTheRate || !minOneDotAfterAtTheRate){
+    response.isValid = false;
+    response.errors.email = "Invalid email format";
+  }
+
+  //phone validation
+  phone = [...phone]
+  const everyPhoneCharDigit = phone.every(char => char.charCodeAt() >= 48 && char.charCodeAt() <= 57)
+  const exactly10PhoneDigits = phone.length === 10
+  const startingFrom6 = phone[0].charCodeAt() >= 54;
+  if(!everyPhoneCharDigit || !exactly10PhoneDigits || !startingFrom6){
+    response.isValid = false;
+    response.errors.phone = "Invalid Indian phone number";
+  }
+
+  //age validation
+  age = Number(age);
+  const isAgeInteger = !isNaN(age) && Number.isInteger(age);
+  const ageInRange = age >= 16 && age <= 100
+  if(!isAgeInteger || !ageInRange){
+    response.isValid = false;
+    response.errors.age = "Age must be an integer between 16 and 100";
+  }
+
+  //pincode validation
+  pincode = [...pincode]
+  const everyPincodeCharDigit = pincode.every(char => char.charCodeAt() >= 48 && char.charCodeAt() <= 57)
+  const exactly6PincodeDigits = pincode.length === 6
+  const pincodeNotStartingWith0 = pincode[0].charCodeAt() !== 48
+  if(!everyPincodeCharDigit || !exactly6PincodeDigits || !pincodeNotStartingWith0){
+    response.isValid = false;
+    response.errors.pincode = "Invalid Indian pincode";
+  }
+
+  //state validation
+  //?. or ?() => It returns undefined rather than error if we try to access undefined property or method
+  //?? => It returns its right-hand side operand when its left-hand side operand is null or undefined, and otherwise returns its left-hand side operand.
+  const stateNotEmpty = state?.length ?? 0;
+  if(!stateNotEmpty){
+    response.isValid = false;
+    response.errors.state = "State is required";
+  }
+
+  //agreeTerms Validation
+  if(!Boolean(agreeTerms)){
+    response.isValid = false;
+    response.errors.agreeTerms = "Must agree to terms";
+  }
+
+  return response;
 }
